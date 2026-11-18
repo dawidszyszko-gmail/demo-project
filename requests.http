@@ -1,0 +1,48 @@
+### Car Rental API requests for JetBrains HTTP Client
+### Start app first: ./gradlew bootRun
+
+@baseUrl = http://localhost:8080
+@existingReservationId = 34efac00-e925-41fa-8888-3454ad8b409c
+@missingReservationId = 99999999-9999-9999-9999-999999999999
+
+### Create reservation - success
+POST {{baseUrl}}/api/reservations
+Content-Type: application/json
+
+{
+  "carType": "SUV",
+  "startDateTime": "2026-11-25T10:00:00",
+  "numberOfDays": 2
+}
+
+### Create reservation - invalid request (missing carType)
+POST {{baseUrl}}/api/reservations
+Content-Type: application/json
+
+{
+  "startDateTime": "2026-11-25T10:00:00",
+  "numberOfDays": 2
+}
+
+### Create reservation - conflict example (run after filling a type/time window)
+POST {{baseUrl}}/api/reservations
+Content-Type: application/json
+
+{
+  "carType": "VAN",
+  "startDateTime": "2026-11-25T10:00:00",
+  "numberOfDays": 2
+}
+
+### Get reservation by id - expected 200 after you use a real id from create response
+GET {{baseUrl}}/api/reservations/{{existingReservationId}}
+
+### Get reservation by id - expected 404
+GET {{baseUrl}}/api/reservations/{{missingReservationId}}
+
+### Check availability - success
+GET {{baseUrl}}/api/availability?carType=SUV&startDateTime=2026-11-25T10:00:00&numberOfDays=2
+
+### Check availability - invalid request (days <= 0)
+GET {{baseUrl}}/api/availability?carType=SUV&startDateTime=2026-11-25T10:00:00&numberOfDays=0
+
